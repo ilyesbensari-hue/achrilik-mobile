@@ -15,10 +15,23 @@ export default function ProductDetailScreen() {
     const { addItem } = useCart();
     const [quantity, setQuantity] = useState(1);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (!product) return;
 
-        addItem(product, quantity);
+        // Convert Product to CartItem format
+        const cartItem = {
+            productId: product.id,
+            title: product.title,
+            price: product.price,
+            image: product.images.split(',')[0], // First image
+            quantity,
+            size: null,
+            color: null,
+            storeId: product.storeId,
+            storeName: product.Store?.name || 'Achrilik',
+        };
+
+        await addItem(cartItem);
 
         Alert.alert(
             'Ajouté au panier ! 🛒',

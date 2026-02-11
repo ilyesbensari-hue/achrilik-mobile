@@ -1,14 +1,12 @@
-import { create } from 'zustand';
-import { cartStore } from '@/src/store/cartStore';
+import { useCartStore } from '@/src/store/cartStore';
 
-// Re-export the store with hooks
 export function useCart() {
-    const items = cartStore((state) => state.items);
-    const addItem = cartStore((state) => state.addItem);
-    const removeItem = cartStore((state) => state.removeItem);
-    const updateQuantity = cartStore((state) => state.updateQuantity);
-    const clearCart = cartStore((state) => state.clearCart);
-    const getTotal = cartStore((state) => state.getTotal);
+    const items = useCartStore((state) => state.items);
+    const addItem = useCartStore((state) => state.addItem);
+    const removeItem = useCartStore((state) => state.removeItem);
+    const updateQuantity = useCartStore((state) => state.updateQuantity);
+    const clearCart = useCartStore((state) => state.clearCart);
+    const totalPrice = useCartStore((state) => state.totalPrice);
 
     // Calculate free delivery progress per store
     const getFreeDeliveryProgress = () => {
@@ -23,18 +21,19 @@ export function useCart() {
         } = {};
 
         items.forEach(item => {
-            const storeId = item.product.Store?.id || 'unknown';
+            const storeId = item.storeId || 'unknown';
             if (!storeGroups[storeId]) {
-                const threshold = item.product.Store?.freeDeliveryThreshold || 8000;
+                // Default threshold of 8000 DA
+                const threshold = 8000;
                 storeGroups[storeId] = {
-                    storeName: item.product.Store?.name || 'Achrilik',
+                    storeName: item.storeName || 'Achrilik',
                     total: 0,
                     threshold,
                     eligible: false,
                     remaining: threshold,
                 };
             }
-            storeGroups[storeId].total += item.product.price * item.quantity;
+            storeGroups[storeId].total += item.price * item.quantity;
         });
 
         // Calculate eligibility
@@ -46,6 +45,8 @@ export function useCart() {
 
         return storeGroups;
     };
+
+    const getTotal = () => totalPrice;
 
     return {
         items,

@@ -1,33 +1,21 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { CartItem as CartItemType } from '@/src/types';
 
 interface CartItemProps {
-    item: {
-        id: string;
-        quantity: number;
-        product: {
-            id: string;
-            title: string;
-            price: number;
-            images: string;
-            Store?: {
-                name: string;
-            };
-        };
-    };
+    item: CartItemType;
     onUpdateQuantity: (itemId: string, newQuantity: number) => void;
     onRemove: (itemId: string) => void;
 }
 
 export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
-    const image = item.product.images.split(',')[0];
-    const subtotal = item.product.price * item.quantity;
+    const subtotal = item.price * item.quantity;
 
     return (
         <View style={styles.container}>
             {/* Image */}
             <Image
-                source={{ uri: image }}
+                source={{ uri: item.image }}
                 style={styles.image}
                 resizeMode="cover"
             />
@@ -35,11 +23,11 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
             {/* Info */}
             <View style={styles.info}>
                 <Text style={styles.title} numberOfLines={2}>
-                    {item.product.title}
+                    {item.title}
                 </Text>
-                <Text style={styles.storeName}>{item.product.Store?.name}</Text>
+                <Text style={styles.storeName}>{item.storeName}</Text>
                 <Text style={styles.price}>
-                    {item.product.price.toLocaleString('fr-DZ')} DA
+                    {item.price.toLocaleString('fr-DZ')} DA
                 </Text>
 
                 {/* Quantity Controls */}
